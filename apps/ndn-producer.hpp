@@ -59,7 +59,8 @@ protected:
   virtual void
   StopApplication(); // Called at time specified by Stop
 
-private:
+  //private: 
+protected:  // For derivative, Jiangtao Luo. 11 Feb 2020
   Name m_prefix;
   Name m_postfix;
   uint32_t m_virtualPayloadSize;
