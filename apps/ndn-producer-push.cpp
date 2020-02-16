@@ -87,6 +87,9 @@ namespace ns3 {
 
             NS_LOG_INFO("node(" << GetNode()->GetId() << ") Sending Data: " << data->getName());
 
+            // Set Nonce
+            data->getNonce();
+
             
             // to create real wire encoding
             data->wireEncode();

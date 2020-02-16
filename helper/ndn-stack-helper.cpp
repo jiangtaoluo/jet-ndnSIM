@@ -45,6 +45,13 @@
 #include "ns3/ndnSIM/NFD/daemon/table/cs-policy-priority-fifo.hpp"
 #include "ns3/ndnSIM/NFD/daemon/table/cs-policy-lru.hpp"
 
+////////////////////////////////
+// Jiangtao Luo 16 Feb 2020
+//#include "ns3/wave-net-device.h"
+ #include "ns3/wifi-net-device.h"
+#include "ns3/ndnSIM/ndn-cxx/encoding/nfd-constants.hpp"
+////////////////////////////////
+
 NS_LOG_COMPONENT_DEFINE("ndn.StackHelper");
 
 namespace ns3 {
@@ -69,6 +76,15 @@ StackHelper::StackHelper()
   m_netDeviceCallbacks.push_back(
     std::make_pair(PointToPointNetDevice::GetTypeId(),
                    MakeCallback(&StackHelper::PointToPointNetDeviceCallback, this)));
+
+  ////////////////////////////////
+  // Add ad-hoc type Callback
+  // Jiangtao Luo. 16 Feb 2020
+  m_netDeviceCallbacks.push_back(
+                                 std::make_pair(WifiNetDevice::GetTypeId(),
+                                                MakeCallback(&StackHelper::AdhocNetDeviceCallback, this))
+                                 );
+  
   // default callback will be fired if non of others callbacks fit or did the job
 }
 
@@ -260,6 +276,52 @@ constructFaceUri(Ptr<NetDevice> netDevice)
   return uri;
 }
 
+////////////////////////////////
+// Jiangtao Luo 16 Feb 2020
+shared_ptr<Face>
+StackHelper::AdhocNetDeviceCallback(Ptr<Node> node, Ptr<L3Protocol> ndn,
+                                     Ptr<NetDevice> device) const
+{
+   NS_LOG_DEBUG("Creating ad-hoc Face on node " << node->GetId());
+
+  Ptr<WifiNetDevice> netDevice = DynamicCast<WifiNetDevice>(device);
+  NS_ASSERT(netDevice != nullptr);
+
+  // access the other end of the link
+  Ptr<Channel> channel = DynamicCast<Channel> (netDevice->GetChannel());
+  NS_ASSERT(channel != nullptr);
+
+  Ptr<NetDevice> remoteNetDevice = channel->GetDevice(0);
+  if (remoteNetDevice->GetNode() == node)
+    remoteNetDevice = channel->GetDevice(1);
+
+  // Create an ndnSIM-specific LinkService instance
+  ::nfd::face::GenericLinkService::Options opts;
+  opts.allowFragmentation = true;
+  opts.allowReassembly = true;
+  opts.allowCongestionMarking = true;
+
+  auto linkService = make_unique<::nfd::face::GenericLinkService>(opts);
+  
+  // ndn::nfd::LinkType linkType = "LINK_TYPE_AD_HOC";
+  auto transport = make_unique<NetDeviceTransport>(node, netDevice,
+                                                   constructFaceUri(netDevice),
+                                                   constructFaceUri(remoteNetDevice),
+                                                   ::ndn::nfd::FACE_SCOPE_NON_LOCAL,
+                                                   ::ndn::nfd::FACE_PERSISTENCY_PERSISTENT,
+                                                   ::ndn::nfd::LINK_TYPE_AD_HOC);
+  //ndn::nfd::LinkType linkType = (ndn::nfd::LinkType)2;
+  //transport->setLinkType(::ndn::nfd::LINK_TYPE_AD_HOC);  // all for this!!! 2= LINK_TYPE_AD_HOC
+ 
+  auto face = std::make_shared<Face>(std::move(linkService), std::move(transport));
+  face->setMetric(1);
+
+
+  ndn->addFace(face);
+  NS_LOG_LOGIC("Node " << node->GetId() << ": added Face as face #"
+                     << face->getLocalUri());
+   return face;
+}
 
 shared_ptr<Face>
 StackHelper::DefaultNetDeviceCallback(Ptr<Node> node, Ptr<L3Protocol> ndn,

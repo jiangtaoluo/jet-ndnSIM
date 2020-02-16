@@ -248,6 +248,13 @@ private:
   doInstall(Ptr<Node> node) const;
 
 private:
+  ////////////////////////////////
+  // adhoc netdevice callback
+  // Jiangtao Luo 16 Feb 2020
+  shared_ptr<Face>
+  AdhocNetDeviceCallback(Ptr<Node> node, Ptr<L3Protocol> ndn, Ptr<NetDevice> netDevice) const;
+  ////////////////////////////////
+  
   shared_ptr<Face>
   DefaultNetDeviceCallback(Ptr<Node> node, Ptr<L3Protocol> ndn, Ptr<NetDevice> netDevice) const;
 
