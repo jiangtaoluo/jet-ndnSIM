@@ -195,7 +195,9 @@ Consumer::SendPacket()
   interest->setInterestLifetime(interestLifeTime);
 
   // NS_LOG_INFO ("Requesting Interest: \n" << *interest);
-  NS_LOG_INFO("> Interest for " << seq);
+  // NS_LOG_INFO("> Interest for " << seq);
+  // Add Name. Jiangtao Luo. 19 Feb 2020
+  NS_LOG_INFO("> Interest for " << interest->getName());
 
   WillSendOutInterest(seq);
 
@@ -223,7 +225,9 @@ Consumer::OnData(shared_ptr<const Data> data)
 
   // This could be a problem......
   uint32_t seq = data->getName().at(-1).toSequenceNumber();
-  NS_LOG_INFO("< DATA for " << seq);
+  //NS_LOG_INFO("< DATA for " << seq);
+  // Print Name. Jiangtao Luo 19 Feb 2020
+  NS_LOG_INFO("DATA for " << data->getName().toUri());
 
   int hopCount = 0;
   auto hopCountTag = data->getTag<lp::HopCountTag>();
@@ -236,7 +240,7 @@ Consumer::OnData(shared_ptr<const Data> data)
   if (entry != m_seqLastDelay.end()) {
     m_lastRetransmittedInterestDataDelay(this, seq, Simulator::Now() - entry->time, hopCount);
   }
-
+ 
   entry = m_seqFullDelay.find(seq);
   if (entry != m_seqFullDelay.end()) {
     m_firstInterestDataDelay(this, seq, Simulator::Now() - entry->time, m_seqRetxCounts[seq], hopCount);
@@ -250,6 +254,13 @@ Consumer::OnData(shared_ptr<const Data> data)
   m_retxSeqs.erase(seq);
 
   m_rtt->AckSeq(SequenceNumber32(seq));
+
+   // Add for critical Data. Using simulation time as delay
+  //Jiangtao Luo. 19 Feb 2020
+  if (data->getEmergencyInd() == "Emergency") {
+    m_lastRetransmittedInterestDataDelay(this, seq, Simulator::Now(), hopCount);
+    m_firstInterestDataDelay(this, seq, Simulator::Now(), m_seqRetxCounts[seq], hopCount);
+  }
 }
 
 void

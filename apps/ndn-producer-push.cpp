@@ -46,7 +46,7 @@ namespace ns3 {
         }
 
         ProducerPush::ProducerPush()
-            :m_dataName("none"), m_emergencyInd("none")
+          :m_dataName("none"), m_emergencyInd("none"),m_seq(0)
         {
             NS_LOG_FUNCTION_NOARGS();
         }
@@ -62,6 +62,9 @@ namespace ns3 {
             NS_LOG_FUNCTION_NOARGS();
 
             Name dataName(m_dataName);
+
+            // Add seq
+            dataName.appendSequenceNumber(m_seq++);
 
             auto data = make_shared<Data>();
             data->setName(dataName);

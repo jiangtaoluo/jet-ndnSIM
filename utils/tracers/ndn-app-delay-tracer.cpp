@@ -238,7 +238,8 @@ AppDelayTracer::LastRetransmittedInterestDataDelay(Ptr<App> app, uint32_t seqno,
         << seqno << "\t"
         << "LastDelay"
         << "\t" << delay.ToDouble(Time::S) << "\t" << delay.ToDouble(Time::US) << "\t" << 1 << "\t"
-        << hopCount << "\n";
+        << hopCount 
+        << "\n";
 }
 
 void
@@ -249,7 +250,8 @@ AppDelayTracer::FirstInterestDataDelay(Ptr<App> app, uint32_t seqno, Time delay,
         << seqno << "\t"
         << "FullDelay"
         << "\t" << delay.ToDouble(Time::S) << "\t" << delay.ToDouble(Time::US) << "\t" << retxCount
-        << "\t" << hopCount << "\n";
+        << "\t" << hopCount
+        << "\n";
 }
 
 } // namespace ndn
