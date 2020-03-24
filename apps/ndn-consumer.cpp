@@ -194,6 +194,10 @@ Consumer::SendPacket()
   time::milliseconds interestLifeTime(m_interestLifeTime.GetMilliSeconds());
   interest->setInterestLifetime(interestLifeTime);
 
+  // Set the HopCount
+  // Jiangtao Luo. 18 Mar 2020
+  interest->setHopCount(0);
+  
   // NS_LOG_INFO ("Requesting Interest: \n" << *interest);
   // NS_LOG_INFO("> Interest for " << seq);
   // Add Name. Jiangtao Luo. 19 Feb 2020

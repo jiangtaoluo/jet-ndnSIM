@@ -249,10 +249,17 @@ private:
 
 private:
   ////////////////////////////////
+  // WAVE netdevice callback
+  // 16 Mar, 2020
+  shared_ptr<Face>
+  WaveNetDeviceCallback(Ptr<Node> node, Ptr<L3Protocol> ndn, Ptr<NetDevice> netDevice) const;
+  
+  
+  // Changed to Wifi netdevice callbakc for adding WAVE
   // adhoc netdevice callback
   // Jiangtao Luo 16 Feb 2020
   shared_ptr<Face>
-  AdhocNetDeviceCallback(Ptr<Node> node, Ptr<L3Protocol> ndn, Ptr<NetDevice> netDevice) const;
+  WifiNetDeviceCallback(Ptr<Node> node, Ptr<L3Protocol> ndn, Ptr<NetDevice> netDevice) const;
   ////////////////////////////////
   
   shared_ptr<Face>
