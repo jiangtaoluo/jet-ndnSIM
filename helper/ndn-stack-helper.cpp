@@ -62,6 +62,7 @@ StackHelper::StackHelper()
   , m_isStrategyChoiceManagerDisabled(false)
   , m_needSetDefaultRoutes(false)
   , m_maxCsSize(100)
+  , m_isInterestOnCch(false)  // Jiangtao Luo. 4 Apr 2020
 {
   setCustomNdnCxxClocks();
 
@@ -378,6 +379,11 @@ StackHelper::WaveNetDeviceCallback(Ptr<Node> node, Ptr<L3Protocol> ndn,
   auto face = std::make_shared<Face>(std::move(linkService), std::move(transport));
   face->setMetric(1);
 
+  // check if sending Interest on CCH. Jiangtao Luo. 4 Apr 2020
+  if (m_isInterestOnCch) {
+    face->setInterestOnCch();
+  }
+
 
   ndn->addFace(face);
   NS_LOG_LOGIC("Node " << node->GetId() << ": added Face as face #"
@@ -577,6 +583,21 @@ StackHelper::ProcessWarmupEvents()
 #endif // HAVE_NS3_VISUALIZER
 }
 
+////////////////////////////////
+// Jiangtao Luo. 4 Apr 2020
+void
+StackHelper::setInterestOnCch()
+{
+  m_isInterestOnCch = true;
+}
+
+void
+StackHelper::clearInterestOnCch()
+{
+  m_isInterestOnCch = false;
+}
+////////////////////////////////
+  
 
 } // namespace ndn
 } // namespace ns3

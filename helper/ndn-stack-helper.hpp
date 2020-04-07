@@ -278,6 +278,16 @@ public:
   void
   setCustomNdnCxxClocks();
 
+  ////////////////////////////////
+  // Set Interest On Cch. Jiangtao Luo. 4 Apr 2020
+  void setInterestOnCch();
+
+  // clear Interest on CCH. Jiangtao Luo. 4 Apr 2020
+  void clearInterestOnCch();
+private:
+  bool m_isInterestOnCch;
+  ////////////////////////////////
+  
 private:
   ObjectFactory m_ndnFactory;
   ObjectFactory m_contentStoreFactory;

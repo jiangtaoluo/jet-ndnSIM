@@ -203,6 +203,7 @@ Consumer::SendPacket()
   // Add Name. Jiangtao Luo. 19 Feb 2020
   NS_LOG_INFO("> Interest for " << interest->getName());
 
+
   WillSendOutInterest(seq);
 
   m_transmittedInterests(interest, this, m_face);

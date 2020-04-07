@@ -64,6 +64,12 @@ private:
   virtual void
   doSend(Packet&& packet) override;
 
+  ////////////////////////////////
+  // For Interest. Jiangtao Luo. 2 April 2020
+  virtual void
+  doSendX(Packet&& packet) override;
+  ////////////////////////////////
+
   void
   receiveFromNetDevice(Ptr<NetDevice> device,
                        Ptr<const ns3::Packet> p,

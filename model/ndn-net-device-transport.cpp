@@ -29,6 +29,8 @@
 
 #include "ns3/queue.h"
 
+#include "ns3/wave-net-device.h"  // Jaingtao Luo
+
 NS_LOG_COMPONENT_DEFINE("ndn.NetDeviceTransport");
 
 namespace ns3 {
@@ -121,6 +123,37 @@ NetDeviceTransport::doSend(Packet&& packet)
   m_netDevice->Send(ns3Packet, m_netDevice->GetBroadcast(),
                     L3Protocol::ETHERNET_FRAME_TYPE);
 }
+
+////////////////////////////////
+// Jiangtao Luo. 2 April 2020
+void
+NetDeviceTransport::doSendX(Packet&& packet)
+{
+  NS_LOG_FUNCTION(this << "Sending Interest on CCH from netDevice with URI"
+                  << this->getLocalUri());
+   // convert NFD packet to NS3 packet
+  BlockHeader header(packet);
+
+  Ptr<ns3::Packet> ns3Packet = Create<ns3::Packet>();
+  ns3Packet->AddHeader(header);
+
+  //NS_LOG_DEBUG("Type = " << m_netDevice->GetTypeId().GetName());
+
+  const TxInfo txInfo = TxInfo (CCH);
+  
+  const Ptr<WaveNetDevice> waveNet = DynamicCast<WaveNetDevice> (m_netDevice);
+    
+  if (waveNet != nullptr) { // WAVE
+    waveNet->SendX  (ns3Packet, m_netDevice->GetBroadcast(),
+                            L3Protocol::ETHERNET_FRAME_TYPE, txInfo);    
+  }
+  else { // Not WAVE
+    m_netDevice->Send(ns3Packet, m_netDevice->GetBroadcast(),
+                    L3Protocol::ETHERNET_FRAME_TYPE);
+  }
+
+}
+////////////////////////////////
 
 // callback
 void
