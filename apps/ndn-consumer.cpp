@@ -37,6 +37,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/ref.hpp>
 
+
 NS_LOG_COMPONENT_DEFINE("ndn.Consumer");
 
 namespace ns3 {
@@ -263,8 +264,12 @@ Consumer::OnData(shared_ptr<const Data> data)
    // Add for critical Data. Using simulation time as delay
   //Jiangtao Luo. 19 Feb 2020
   if (data->getEmergencyInd() == "Emergency") {
-    m_lastRetransmittedInterestDataDelay(this, seq, Simulator::Now(), hopCount);
-    m_firstInterestDataDelay(this, seq, Simulator::Now(), m_seqRetxCounts[seq], hopCount);
+    NS_LOG_DEBUG("Data Born Time (ns) = " << data->getBornTime());
+
+    Time born = Time(data->getBornTime());
+ 
+    m_lastRetransmittedInterestDataDelay(this, seq, Simulator::Now()- born, hopCount);
+    m_firstInterestDataDelay(this, seq, Simulator::Now()-born, m_seqRetxCounts[seq], hopCount);
   }
 }
 

@@ -11,6 +11,8 @@
 
 #include "ndn-producer.hpp"
 
+#include "ns3/random-variable-stream.h"
+
 namespace ns3 {
 namespace ndn {
 
@@ -35,11 +37,47 @@ protected:
   virtual void
   StartApplication();  // Start the applicaiton, and send the first Data packet;
 
+  virtual void
+  StopApplication();  // Stop the applicaiton, and cancel the event of Data packet;
+
+  
+protected:
+  /**
+   * \brief Constructs the Data packet and sends it using a callback to the underlying NDN
+   * protocol
+   */
+  virtual void
+  ScheduleNextPacket();
+
+  /**
+   * @brief Set type of frequency randomization
+   * @param value Either 'none', 'uniform', or 'exponential'
+   */
+  void
+  SetRandomize(const std::string& value);
+
+  /**
+   * @brief Get type of frequency randomization
+   * @returns either 'none', 'uniform', or 'exponential'
+   */
+  std::string
+  GetRandomize() const;
+
+protected:
+  double m_frequency; // Frequency of interest packets (in hertz)
+  bool m_firstTime;
+  Ptr<RandomVariableStream> m_random;
+  std::string m_randomType;
+
 private:
   Name m_dataName;  // Name of the generated Data packets
   std::string  m_emergencyInd;  // Indicator of Emergency
   uint32_t m_seq;  // sequence numer current being sent
+  uint32_t m_seqMax;   ///< @brief maximum number of sequence number
+
+  EventId m_sendEvent; ///< @brief EventId of pending "send packet" event
 };
+  
 } 
 }
 
